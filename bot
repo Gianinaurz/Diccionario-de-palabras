@@ -1,5 +1,7 @@
 import discord
 import random
+import os 
+import requests
 
 from discord.ext import commands
 
@@ -8,34 +10,61 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='$', intents=intents)
 
+#Funcion patito aleatorio
+def get_duck_image_url():    
+    url = 'https://random-d.uk/api/random'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+
+#Funcion perro aleatorio
+def get_dog_image_url():    
+    url = ' https://random.dog/woof.json'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
 
+#saluda
 @bot.command()
 async def hello(ctx):
+    """El bot te saluda"""
     await ctx.send(f'Hola, soy un bot {bot.user}!')
 
+#menu ayuda
+bot.command()
+async def help(ctx):
+    await ctx.send("No sabes que preguntar me? Aqui tienes unas sugerencias:")
+
+
+#multiplica heh
 @bot.command()
 async def heh(ctx, count_heh = 5):
+    """Te manda varios heh"""
     await ctx.send("he" * count_heh)
 
+#avis si alguien ingreso
 @bot.command()
 async def joined(ctx, member: discord.Member):
-    """Says when a member joined."""
+    """Verifica si alguien se unio"""
     await ctx.send(f'{member.name} joined {discord.utils.format_dt(member.joined_at)}')
 
-    
+#suma    
 @bot.command()
 async def add(ctx, left: int, right: int):
-    """Adds two numbers together."""
+    """Suma dos numeros"""
     await ctx.send(left + right)
 
+#es el bot cool?
 @bot.command()
 async def cool(ctx):
-    """Is the bot cool?"""
+    """Es el bot cool?"""
     await ctx.send('Yes, the bot is cool.')
 
+#Te recomienda un libro
 @bot.command()
 async def book(ctx):
     """Te recomienda un libro"""
@@ -44,6 +73,7 @@ async def book(ctx):
     choice += random.choice(book)
     await ctx.send(choice)
 
+#contraseña aleatoria
 @bot.command()
 async def genpass(ctx):
     """Generador de contraseña"""
@@ -53,6 +83,50 @@ async def genpass(ctx):
     for i in range(x):
         password += random.choice(elements)
     await ctx.send(password)
+
+#memes de programacion aleatorios
+@bot.command()
+async def memeprogramar(ctx): 
+    """Te manda un meme de programacion"""
+    img_name = random.choice(os.listdir("images/programacion"))
+        
+    with open(f'images/programacion/{img_name}', 'rb') as mem:
+        picture = discord.File(mem)
+    await ctx.send(file=picture)
+
+#memes de animales aleatorios
+@bot.command()
+async def memeanimales(ctx): 
+    """Te manda un meme de animales"""
+    img_name = random.choice(os.listdir("images/animales"))
+        
+    with open(f'images/animales/{img_name}', 'rb') as mem:
+        picture = discord.File(mem)
+    await ctx.send(file=picture)
+
+#memes de lectores aleatorios
+@bot.command()
+async def memeleer(ctx): 
+    """Te manda un meme de lectores"""
+    img_name = random.choice(os.listdir("images/lectores"))
+        
+    with open(f'images/lectores/{img_name}', 'rb') as mem:
+        picture = discord.File(mem)
+    await ctx.send(file=picture)
+
+#patito aleatorio
+@bot.command('duck')
+async def duck(ctx):
+    '''Te manda imagenes aleatorias de patos'''
+    image_url = get_duck_image_url()
+    await ctx.send(image_url)
+
+#perro aleatorio
+@bot.command('dog')
+async def dog(ctx):
+    """Te manda imagenes aleatorias de perros"""
+    image_url = get_dog_image_url()
+    await ctx.send(image_url)
 
 bot.run("token")
 
